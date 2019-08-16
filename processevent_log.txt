@@ -1,0 +1,118 @@
+notes
+
+strike turncap pointer (for X turncap, seems like right overhead strike)
+20C2C5209DC		-1 when no turncap, 325 (or whatever the X turncap is when swinging). after the turncap period seems to end, it starts increasing, then resets back to -1
+20C2C5209E0		-1 when no turncap (not swinging), 325 when swinging (number depends on the weapon being used)
+
+stab turncap pointer (for Y turncap) (dont think these matter)
+20C2C5209E4		-1 when no turncap
+20C2C5209E8		-1 when no turncap
+
+
+
+stab turncap pointer
+//seems like its set from both of these. that makes sense since turncaps are a vector
+
+
+STRIKE TURNCAP 1 (with the counter) accessed from the following locations:
+
+7FF62836DAEC - F3 41 0F10 AC 24 D4090000  - movss xmm5,[r12+000009D4]			//called every tick of the game?
+7FF62837060E - 0F2E 87 D4090000  - ucomiss xmm0,[rdi+000009D4]					//some function which gets mouse input
+7FF62838318F - F3 0F10 8B D4090000  - movss xmm1,[rbx+000009D4]					//when swing/turncap is initiated and when turncap timer is done
+7FF6283831A1 - F3 0F11 B3 D4090000  - movss [rbx+000009D4],xmm6					//accessed when turncap is initiated (some onAttack thing?)
+7FF62836DB20 - F3 41 0F11 84 24 D4090000  - movss [r12+000009D4],xmm0			//accessed when turncap is off		 (sets value back to normal maybe?)
+7FF62836DBA0 - 41 C7 84 24 D4090000 000080BF - mov [r12+000009D4],BF800000		//not sure
+
+STRIKE TURNCAP 2
+
+
+7FF62838314A - movss [rbx+000009D0],xmm7      <----	only hits it when swing is initated. OnAttack callback. same as above
+	Probable base pointer =2691DFCE390
+
+7FF62836DA43 - movss xmm1,[r12+000009D0]		<--- every game tick. same as above
+	Probable base pointer =D3ADACE198
+
+//Strike Turncap 2 is AAdvancedCharacter->TurnCap (0x9D4, the original was wrong)
+//Strike Turncap 1 is AAdvancedCharacter->LookupRateCapTarget
+
+
+
+My Pawn ProcessEvent
+ProcessEvent: Function Engine.Actor.ReceiveTick
+ProcessEvent: Function BP_MordhauCharacter.BP_MordhauCharacter_C.BPLODTick
+ProcessEvent: Function Engine.Actor.ReceiveEndPlay
+ProcessEvent: Function Engine.Actor.K2_OnBecomeViewTarget
+ProcessEvent: Function Mordhau.AdvancedCharacter.ServerLookUp
+LogGameMode: Display: Match State Changed from WaitingToStart to InProgress
+ProcessEvent: Function Mordhau.MordhauCharacter.ClientSetNetMotion
+ProcessEvent: Function Mordhau.MordhauCharacter.ServerRequestVoiceCommand
+ProcessEvent: Function Mordhau.MordhauCharacter.MoveBlockedBySlow
+ProcessEvent: Function Engine.Actor.ReceiveHit
+ProcessEvent: Function BP_MordhauCharacter.BP_MordhauCharacter_C.TryClimbing
+ProcessEvent: Function Engine.Character.CanJumpInternal
+ProcessEvent: Function Engine.Character.K2_OnMovementModeChanged
+ProcessEvent: Function Engine.Character.OnLanded
+ProcessEvent: Function BP_MordhauCharacter.BP_MordhauCharacter_C.CalculateLedgeOffsetAndNormal
+ProcessEvent: Function Engine.Character.K2_UpdateCustomMovement
+ProcessEvent: Function Engine.Character.OnWalkingOffLedge
+ProcessEvent: Function Engine.Actor.ReceiveActorBeginOverlap
+ProcessEvent: Function Engine.Actor.ReceiveAnyDamage
+ProcessEvent: Function Mordhau.AdvancedCharacter.CanBleedOutFromHit
+ProcessEvent: Function Mordhau.AdvancedCharacter.OnKilled
+ProcessEvent: Function Engine.Pawn.ReceiveUnpossessed
+ProcessEvent: Function Mordhau.AdvancedCharacter.OnTookDamage
+ProcessEvent: Function Mordhau.AdvancedCharacter.OnHit
+ProcessEvent: Function BP_MordhauCharacter.BP_MordhauCharacter_C.OnDied
+ProcessEvent: Function Mordhau.AdvancedCharacter.OnAfterDied
+ProcessEvent: Function BP_MordhauCharacter.BP_MordhauCharacter_C.ApplyRagdollForce
+LogScript: Warning: Script Msg: Divide by zero: ProjectVectorOnToVector with zero Target vector
+ProcessEvent: Function Engine.Actor.ReceiveActorEndOverlap
+ProcessEvent: Function Engine.Actor.K2_OnEndViewTarget
+ProcessEvent: Function Engine.Pawn.ReceivePossessed
+
+
+PlayerController ProcessEvent
+ProcessEvent: Function BP_MordhauPlayerController.BP_MordhauPlayerController_C.ReceiveTick
+LogGameMode: Display: Match State Changed from WaitingToStart to InProgress
+ProcessEvent: Function Engine.Controller.ReceiveInstigatedAnyDamage
+ProcessEvent: Function BP_MordhauPlayerController.BP_MordhauPlayerController_C.InpActEvt_Show Main Menu_K2Node_InputActionEvent_14
+ProcessEvent: Function BP_MordhauPlayerController.BP_MordhauPlayerController_C.ChoiceMenuOptionSelected
+ProcessEvent: Function BP_MordhauPlayerController.BP_MordhauPlayerController_C.InpActEvt_Show Voice Menu_K2Node_InputActionEvent_6
+
+Equipment ProcessEvent
+((SDK::AMordhauCharacter*)(*Global::m_UWorld)->OwningGameInstance->LocalPlayers[0]->PlayerController->Pawn)->Equipment[0];
+ProcessEvent: Function Engine.Actor.ReceiveTick
+ProcessEvent: Function Mordhau.MordhauEquipment.LocalPlayerTick
+ProcessEvent: Function Mordhau.MordhauEquipment.LateTick
+ProcessEvent: Function Mordhau.MordhauEquipment.LocalPlayerLateTick
+ProcessEvent: Function Mordhau.MordhauEquipment.OnDropped
+ProcessEvent: Function Mordhau.MordhauEquipment.OnHolsteredOrDropped
+ProcessEvent: Function Engine.Actor.ReceiveEndPlay
+ProcessEvent: Function Mordhau.MordhauEquipment.ShouldShine
+ProcessEvent: Function Mordhau.MordhauWeapon.UpdateTrail
+ProcessEvent: Function Mordhau.MordhauActor.CanInteract
+ProcessEvent: Function Mordhau.MordhauEquipment.OnPickedUp
+ProcessEvent: Function Mordhau.MordhauActor.CanHeldInteract
+ProcessEvent: Function Mordhau.MordhauEquipment.OnHolstered
+ProcessEvent: Function Mordhau.MordhauEquipment.OnEquipped
+LogGameMode: Display: Match State Changed from WaitingToStart to InProgress
+LogStreaming: Display: Suspending async loading (1)
+LogStreaming: Display: Resuming async loading (0)
+LogStreaming: Display: Flushing async loaders.
+LogStreaming: Display: Suspending async loading (1)
+LogStreaming: Display: Resuming async loading (0)
+ProcessEvent: Function Mordhau.MordhauEquipment.OnRequestFire
+ProcessEvent: Function Mordhau.MordhauEquipment.RequestAttack
+ProcessEvent: Function Mordhau.MordhauEquipment.CanPerformAttack
+ProcessEvent: Function Mordhau.MordhauWeapon.OnAttackStarted
+ProcessEvent: Function Mordhau.MordhauWeapon.OnCosmeticHit
+ProcessEvent: Function Mordhau.MordhauWeapon.OnWasBlocked
+ProcessEvent: Function Mordhau.MordhauWeapon.OnHit
+
+AAdvancedCharacter ProcessEvent does audio and movement stuff
+
+
+	/*
+		original UObject process event addr: 7ff615fd51b0 
+	
+	*/
